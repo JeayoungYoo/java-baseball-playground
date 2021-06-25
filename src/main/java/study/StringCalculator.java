@@ -1,10 +1,8 @@
 package study;
 
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.function.BiFunction;
 
 public class StringCalculator {
@@ -14,10 +12,7 @@ public class StringCalculator {
     private LinkedList<String> operator = new LinkedList<>();
     private static double result = 0;
 
-    public void input (String input) {
-//        Scanner sc = new Scanner(new InputStreamReader(System.in));
-//        String input = sc.nextLine();
-
+    public double load (String input) {
         String[] str = input.split(" ");
 
         for (String e : str) {
@@ -28,9 +23,18 @@ public class StringCalculator {
             }
         }
 
-        result = numbers.poll();
-        while (numbers.size() > 0) {
-            result = calculate(operator.poll(), result, numbers.poll());
+        if (numbers.size() < 2) {
+            throw new IllegalArgumentException();
+        }
+
+        if (operator.size() + 1 != numbers.size()) {
+            throw new IllegalArgumentException();
+        } else {
+            result = numbers.poll();
+            while (numbers.size() > 0) {
+                result = calculate(operator.poll(), result, numbers.poll());
+            }
+            return result;
         }
     }
 
