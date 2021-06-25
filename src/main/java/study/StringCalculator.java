@@ -1,73 +1,48 @@
 package study;
 
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.function.BiFunction;
 
 public class StringCalculator {
 
-    private String input;
+    private static Map<String, BiFunction<Double, Double, Double>> operators = new HashMap<>();
     private LinkedList<Integer> numbers = new LinkedList<>();
-    private LinkedList<String> operators = new LinkedList<>();
-    private int result;
+    private LinkedList<String> operator = new LinkedList<>();
+    private static double result = 0;
 
-    public void input () {
-        Scanner sc = new Scanner(new InputStreamReader(System.in));
-        String input = sc.nextLine();
+    public void input (String input) {
+//        Scanner sc = new Scanner(new InputStreamReader(System.in));
+//        String input = sc.nextLine();
 
         String[] str = input.split(" ");
 
         for (String e : str) {
-            if (e.matches("-?\\d+")) {
-                operators.add(e);
+            if (e.matches("[+\\-*/]")) {
+                operator.add(e);
             } else {
                 numbers.add(Integer.parseInt(e));
             }
         }
-    }
-
-    public int calculate() {
-        result = 0;
 
         result = numbers.poll();
-
-        while (numbers.size()>0) {
-            switch (operators.poll()) {
-                case "+" :
-                    result = Operation.PLUS.calculable.calculate(result, numbers.poll());
-                    break;
-                case "-" :
-                    result = Operation.MINUS.calculable.calculate(result, numbers.poll());
-                    break;
-                case "*" :
-                    result = Operation.MUL.calculable.calculate(result, numbers.poll());
-                    break;
-                case "/" :
-                    result = Operation.DIV.calculable.calculate(result, numbers.poll());
-                    break;
-            }
-        }
-        return result;
-    }
-
-    public interface Calculable {
-        int calculate(int e1, int e2);
-    }
-
-    enum Operation {
-        PLUS((a, b) -> a + b),
-        MINUS((a, b) -> a - b),
-        MUL((a, b) -> a * b),
-        DIV((a, b) -> a / b);
-
-        private final Calculable calculable;
-
-        Operation(Calculable calculable) {
-            this.calculable = calculable;
-        }
-
-        public Calculable calculate() {
-            return calculable;
+        while (numbers.size() > 0) {
+            result = calculate(operator.poll(), result, numbers.poll());
         }
     }
+
+    static {
+        operators.put("+", (e1, e2) -> e1 + e2);
+        operators.put("-", (e1, e2) -> e1 - e2);
+        operators.put("*", (e1, e2) -> e1 * e2);
+        operators.put("/", (e1, e2) -> e1 / e2);
+    }
+
+    public static double calculate(String operator, double e1, double e2) {
+        return operators.get(operator).apply(e1, e2);
+    }
+
 }
